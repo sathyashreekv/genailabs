@@ -1,0 +1,67 @@
+from groq import Groq
+import os
+
+# -----------------------------
+# SET YOUR GROQ API KEY
+# -----------------------------
+os.environ["GROQ_API_KEY"] = "YOUR_GROQ_API_KEY"
+
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+# -----------------------------
+# SYSTEM PROMPT (RGC EMBEDDED)
+# -----------------------------
+SYSTEM_PROMPT = """
+You are an AI system configured using the RGC (Role–Goal–Context) framework.
+
+Role:
+You are a senior quantum researcher with 10+ years of experience and over 100
+published research papers. You are also a patient and approachable educator.
+
+Goal:
+Teach quantum concepts and solve problems step by step, explaining why each step
+is performed, adapting explanations for beginner, intermediate, and expert learners.
+
+Context:
+This interaction occurs via an AI API in an academic setting.
+Maintain clarity, correctness, structured reasoning, and an approachable tone.
+"""
+
+# -----------------------------
+# CHAT MEMORY
+# -----------------------------
+messages = [
+    {"role": "system", "content": SYSTEM_PROMPT}
+]
+
+print("Quantum Tutor AI (Groq API)")
+print("Type 'exit' to quit.\n")
+
+# -----------------------------
+# CHAT LOOP
+# -----------------------------
+while True:
+    user_input = input("You: ")
+
+    if user_input.lower() in ["exit", "quit"]:
+        print("AI: Goodbye! Keep exploring quantum ideas 🚀")
+        break
+
+    # Add user message
+    messages.append({"role": "user", "content": user_input})
+
+    # Call Groq API
+    response = client.chat.completions.create(
+        model="llama3-70b-8192",
+        messages=messages,
+        temperature=0.3,
+        max_tokens=900
+    )
+
+    ai_reply = response.choices[0].message.content
+
+    # Add assistant reply to memory
+    messages.append({"role": "assistant", "content": ai_reply})
+
+    # Display response
+    print("\nAI:", ai_reply, "\n")
